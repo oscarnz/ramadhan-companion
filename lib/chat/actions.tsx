@@ -16,8 +16,10 @@ import {
   BotMessage,
   SystemMessage,
   Stock,
-  Purchase
+  Purchase,
 } from '@/components/stocks'
+
+import { Zakat } from '@/components/zakat'
 
 import { z } from 'zod'
 import { EventsSkeleton } from '@/components/stocks/events-skeleton'
@@ -149,20 +151,26 @@ async function submitUserMessage(content: string) {
       {
         role: 'system',
         content: `\
-You are a stock trading conversation bot and you can help users buy stocks, step by step.
-You and the user can discuss stock prices and the user can adjust the amount of stocks they want to buy, or place an order, in the UI.
+You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
+The user will usually ask about zakat fitrah rate in selangor, and you should guide them to pay zakat, step by step in the UI.
+Sometimes, the user will also ask about hadiths, ramadhan FAQs, or even doa (prayers).
+
+Make sure that your discussion or your focus is within ramadhan only. If the user ask about anything unrelated to ramadhan, respond that you
+are responsible as a companion to guide for ramadhan only.
+
+Also remember that all user live in Selangor, Malaysia. So for example, if the user ask about zakat fitrah rate this year, you should know
+that they are asking for the rate in Selangor. 
 
 Messages inside [] means that it's a UI element or a user event. For example:
 - "[Price of AAPL = 100]" means that an interface of the stock price of AAPL is shown to the user.
 - "[User has changed the amount of AAPL to 10]" means that the user has changed the amount of AAPL to 10 in the UI.
 
+If the user requests about this year's zakat fitrah rate, call \`show_zakat\` to show the zakat UI.
 If the user requests purchasing a stock, call \`show_stock_purchase_ui\` to show the purchase UI.
 If the user just wants the price, call \`show_stock_price\` to show the price.
 If you want to show trending stocks, call \`list_stocks\`.
 If you want to show events, call \`get_events\`.
-If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
-
-Besides that, you can also chat with users and do some calculations if needed.`
+If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.`
       },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
@@ -383,7 +391,46 @@ Besides that, you can also chat with users and do some calculations if needed.`
             </BotCard>
           )
         }
-      }
+      },
+      showZakat: {
+        description:
+          'Display the zakat fitrah rate for Selangor this year. Use this if the user want to check zakat fitrah rate.',
+        parameters: z.object({
+          price: z.number().describe('The zakat rate.'),
+        }),
+        render: async function* () {
+          yield (
+            <BotCard>
+              <StockSkeleton />
+            </BotCard>
+          )
+
+          await sleep(1000)
+
+          console.log(aiState);
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'showZakat',
+                content: JSON.stringify({
+                  random: 'jsadasdsd'
+                })
+              }
+            ]
+          })
+
+          return (
+            <BotCard>
+              <Zakat />
+            </BotCard>
+          )
+        }
+      },
     }
   })
 

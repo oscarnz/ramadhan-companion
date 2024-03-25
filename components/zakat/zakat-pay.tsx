@@ -14,25 +14,20 @@ import {
 import type { AI } from '@/lib/chat/actions'
 import Link from 'next/link'
 
-interface Purchase {
+interface Zakat {
   riceType: string
   numberOfShares?: number
-  symbol: string
   price: number
   status: 'requires_action' | 'completed' | 'expired'
 }
 
-export function Purchase({
-  props: { numberOfShares, symbol, price, status = 'requires_action' }
-}: {
-  props: Purchase
-}) {
-  const [value, setValue] = useState(numberOfShares || 100)
+export function Zakat() {
+  const [value, setValue] = useState(1)
   const [riceType, setRiceType] = useState<string | null>(null)
   const [purchasingUI, setPurchasingUI] = useState<null | React.ReactNode>(null)
   const [aiState, setAIState] = useAIState<typeof AI>()
   const [, setMessages] = useUIState<typeof AI>()
-  const { confirmPurchase } = useActions()
+  const { confirmZakat } = useActions()
 
   function getPrice() {
     switch (riceType) {
@@ -201,7 +196,7 @@ export function Purchase({
         </>
       ) : status === 'completed' ? (
         <p className="mb-2 text-white">
-          You have successfully purchased {value} ${symbol}. Total cost:{' '}
+          You have successfully purchased {value}. Total cost:{' '}
           {formatNumber(value * price)}
         </p>
       ) : status === 'expired' ? (

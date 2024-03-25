@@ -45,7 +45,7 @@ export function formatDate(input: string | number | Date): string {
 export const formatNumber = (value: number) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'MYR'
   }).format(value)
 
 export const runAsyncFnWithoutBlocking = (
