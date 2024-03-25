@@ -15,6 +15,7 @@ import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
 import { Session } from '@/lib/types'
+import Image from 'next/image'
 
 async function UserOrLogin() {
   const session = (await auth()) as Session
@@ -55,7 +56,11 @@ export function Header() {
           <UserOrLogin />
         </React.Suspense>
       </div>
-     
+      <div className="flex items-center justify-end space-x-2">
+       <div>
+        <Image src="/ramadhanai.png" alt='logo ramadhan' height={72} width={72}/>
+       </div>
+      </div>
     </header>
   )
 }
