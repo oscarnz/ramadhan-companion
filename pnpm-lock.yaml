@@ -686,6 +686,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
+<<<<<<< HEAD
   /@aws-sdk/util-dynamodb@3.540.0(@aws-sdk/client-dynamodb@3.540.0):
     resolution: {integrity: sha512-Er3OCddj5MhJIpX4jzjeHpvyTcYk+LE1b2Efaku1xT8LeQ29mhg+6BFPsbYydqIas5KLQd8AiNVWBWN8qdpLRA==}
     engines: {node: '>=14.0.0'}
@@ -696,6 +697,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
+=======
+>>>>>>> 8e8f7e1 (feat: add form)
   /@aws-sdk/util-endpoints@3.540.0:
     resolution: {integrity: sha512-1kMyQFAWx6f8alaI6UT65/5YW/7pDWAKAdNwL6vuJLea03KrZRX3PMoONOSJpAS5m3Ot7HlWZvf3wZDNTLELZw==}
     engines: {node: '>=14.0.0'}
