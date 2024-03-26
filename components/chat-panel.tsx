@@ -37,8 +37,8 @@ export function ChatPanel({
   const exampleMessages = [
     {
       heading: 'What are the',
-      subheading: 'trending memecoins today?',
-      message: `What are the trending memecoins today?`
+      subheading: 'prayer times today?',
+      message: `What are the prayer times today?`
     },
     {
       heading: 'What is the rate of zakat fitrah',
