@@ -1,12 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { StockSkeleton } from '../stocks/stock-skeleton'
-import { StocksSkeleton } from '../stocks/stocks-skeleton'
-import { EventsSkeleton } from '../stocks/events-skeleton'
-import { spinner } from '../stocks'
 
-export { BotCard, BotMessage, SystemMessage } from '../stocks/message'
+export { BotCard, BotMessage, SystemMessage } from './message'
 
 const Zakat = dynamic(
   () => import('./zakat-pay').then(mod => mod.Zakat),
