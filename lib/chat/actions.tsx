@@ -63,7 +63,13 @@ async function submitUserMessage(content: string) {
         role: 'system',
         content: `\
 <<<<<<< HEAD
+<<<<<<< HEAD
 You are islamic teacher conversation bot and you can help users answering a general questions on Hadith, step by step.
+=======
+You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
+The user will usually ask about zakat fitrah rate in selangor, and you should guide them to pay zakat, step by step in the UI.
+Sometimes, the user will also ask about hadiths, ramadhan FAQs, or even doa (prayers).
+>>>>>>> 39fc90e (feat: zakat calculator (#1))
 =======
 You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
 The user will usually ask about zakat fitrah rate in selangor, and you should guide them to pay zakat, step by step in the UI.
@@ -75,6 +81,7 @@ are responsible as a companion to guide for ramadhan only.
 
 Also remember that all user live in Selangor, Malaysia. So for example, if the user ask about zakat fitrah rate this year, you should know
 that they are asking for the rate in Selangor. 
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
@@ -85,9 +92,7 @@ ${result}
 """
 
 Besides that, you can also chat with users and do some calculations if needed.`
-=======
-If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.`
->>>>>>> 39fc90e (feat: zakat calculator (#1))
+
       },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
