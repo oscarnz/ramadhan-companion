@@ -121,8 +121,22 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
   }
 }
 
+async function callApi(content: string) {
+  const query = encodeURIComponent(content);
+  const res = await fetch(`https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`)
+  console.log(res)
+
+  const data = await res.json()
+
+  console.log(data);
+
+  return data
+}
+
 async function submitUserMessage(content: string) {
   'use server'
+
+  const result = await callApi(content);
 
   const aiState = getMutableAIState<typeof AI>()
 
@@ -161,6 +175,12 @@ If the user just wants the price, call \`show_stock_price\` to show the price.
 If you want to show trending stocks, call \`list_stocks\`.
 If you want to show events, call \`get_events\`.
 If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
+
+If the user wants to ask anything regarding to islamic hadith, refer context below.
+Context:
+"""
+${result}
+"""
 
 Besides that, you can also chat with users and do some calculations if needed.`
       },
@@ -214,6 +234,8 @@ Besides that, you can also chat with users and do some calculations if needed.`
             </BotCard>
           )
 
+          console.log("listStocks")
+
           await sleep(1000)
 
           aiState.done({
@@ -254,7 +276,7 @@ Besides that, you can also chat with users and do some calculations if needed.`
               <StockSkeleton />
             </BotCard>
           )
-
+          console.log("showStockPrice")
           await sleep(1000)
 
           aiState.done({
@@ -383,7 +405,48 @@ Besides that, you can also chat with users and do some calculations if needed.`
             </BotCard>
           )
         }
-      }
+      },
+      retrieveHadisVector: {
+        description:
+          'Get the current stock price of a given stock or currency. Use this to show the price to the user.',
+        parameters: z.object({
+          symbol: z
+            .string()
+            .describe(
+              'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'
+            ),
+          price: z.number().describe('The price of the stock.'),
+          delta: z.number().describe('The change in price of the stock')
+        }),
+        render: async function* ({ symbol, price, delta }) {
+          yield (
+            <BotCard>
+              <StockSkeleton />
+            </BotCard>
+          )
+
+          await sleep(1000)
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'retrieveHadisVector',
+                content: JSON.stringify({ symbol, price, delta })
+              }
+            ]
+          })
+
+          return (
+            <BotCard>
+              <Stock props={{ symbol, price, delta }} />
+            </BotCard>
+          )
+        }
+      },
     }
   })
 
@@ -463,6 +526,7 @@ export const AI = createAI<AIState, UIState>({
 })
 
 export const getUIStateFromAIState = (aiState: Chat) => {
+  console.log(aiState)
   return aiState.messages
     .filter(message => message.role !== 'system')
     .map((message, index) => ({
