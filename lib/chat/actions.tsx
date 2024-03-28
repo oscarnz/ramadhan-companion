@@ -32,8 +32,22 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
+async function callApi(content: string) {
+  const query = encodeURIComponent(content);
+  const res = await fetch(`https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`)
+  console.log(res)
+
+  const data = await res.json()
+
+  console.log(data);
+
+  return data
+}
+
 async function submitUserMessage(content: string) {
   'use server'
+
+  const result = await callApi(content);
 
   const aiState = getMutableAIState<typeof AI>()
 
@@ -70,7 +84,14 @@ are responsible as a companion to guide for ramadhan only.
 Also remember that all user live in Selangor, Malaysia. So for example, if the user ask about zakat fitrah rate this year, you should know
 that they are asking for the rate in Selangor. 
 
-If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.`
+If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
+
+If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
+Hadith Context:
+"""
+${result}
+"""
+`
       },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
@@ -219,6 +240,7 @@ export const AI = createAI<AIState, UIState>({
 })
 
 export const getUIStateFromAIState = (aiState: Chat) => {
+  console.log(aiState)
   return aiState.messages
     .filter(message => message.role !== 'system')
     .map((message, index) => ({
