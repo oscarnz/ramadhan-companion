@@ -10,7 +10,7 @@ import { ChatShareDialog } from '@/components/chat-share-dialog'
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
-import { UserMessage } from './stocks/message'
+import { UserMessage } from './zakat/message'
 
 export interface ChatPanelProps {
   id?: string
@@ -41,9 +41,9 @@ export function ChatPanel({
       message: `What are the trending memecoins today?`
     },
     {
-      heading: 'What is the price of',
-      subheading: '$DOGE right now?',
-      message: 'What is the price of $DOGE right now?'
+      heading: 'What is the rate of zakat fitrah',
+      subheading: 'in Selangor right now?',
+      message: 'What is the rate of zakat fitrah in Selangor this year?'
     },
     {
       heading: 'I would like to buy',
