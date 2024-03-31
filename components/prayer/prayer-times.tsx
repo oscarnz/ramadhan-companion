@@ -29,9 +29,7 @@ export const PrayerTime = () => {
                         <p >Fajr - 6:07</p>
                     </div>
                 </div>
-
             </div>
-
         </div>
     )
 }
