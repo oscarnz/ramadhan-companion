@@ -62,12 +62,11 @@ export function ReminderForm({ reminderCount }: ReminderFormProps) {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-
     if (reminderCount >= 3) {
       toast.error('You can only set a maximum of 3 reminders')
       return
     }
-    
+
     const res = await setReminder({
       reminder: data.reminder,
       time: data.time,
@@ -76,8 +75,8 @@ export function ReminderForm({ reminderCount }: ReminderFormProps) {
 
     if (res.$metadata.httpStatusCode === 200) {
       toast.success('Reminder set successfully')
-      form.reset()
       router.refresh()
+      form.reset()
     }
   }
 
