@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Calendar, Moon, Sun, SunMoon, Sunrise, Sunset } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
 interface WaktuSolat {
@@ -17,6 +18,7 @@ interface WaktuSolat {
 
 interface PrayerCardProps {
   prayerTime: {
+    hijri: string
     fajr: number
     dhuhr: number
     asr: number
@@ -34,106 +36,11 @@ function convertTime(time: number) {
 }
 
 const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
-  function SunriseIcon(props) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 2v8" />
-        <path d="m4.93 10.93 1.41 1.41" />
-        <path d="M2 18h2" />
-        <path d="M20 18h2" />
-        <path d="m19.07 10.93-1.41 1.41" />
-        <path d="M22 22H2" />
-        <path d="m8 6 4-4 4 4" />
-        <path d="M16 18a4 4 0 0 0-8 0" />
-      </svg>
-    )
-  }
-
-  function SunsetIcon(props) {
-    return (
-      <svg
-        {...props}
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 10V2" />
-        <path d="m4.93 10.93 1.41 1.41" />
-        <path d="M2 18h2" />
-        <path d="M20 18h2" />
-        <path d="m19.07 10.93-1.41 1.41" />
-        <path d="M22 22H2" />
-        <path d="m16 6-4 4-4-4" />
-        <path d="M16 18a4 4 0 0 0-8 0" />
-      </svg>
-    )
-  }
-
   return (
     <>
-      {/* <div className="grid grid-cols-2 gap-2 rounded-xl border mt-3">
-        <div className="flex flex-row items-center justify-center p-4 space-x-3 ">
-          <SunriseIcon className="text-gray-500" />
-          <div>Fajr</div>
-        </div>
-
-        <div className="flex flex-row items-center justify-center">
-          <div>{convertTime(prayerTime.fajr)} AM</div>
-        </div>
-        <div className="flex flex-row items-center justify-center p-4 space-x-3 ">
-          <SunriseIcon className="text-gray-500" />
-          <div>Fajr</div>
-        </div>
-
-        <div className="flex flex-row items-center justify-center">
-          <div>{convertTime(prayerTime.fajr)} AM</div>
-        </div>
-        <div className="flex flex-row items-center justify-center p-4 space-x-3 ">
-          <SunriseIcon className="text-gray-500" />
-          <div>Fajr</div>
-        </div>
-
-        <div className="flex flex-row items-center justify-center">
-          <div>{convertTime(prayerTime.fajr)} AM</div>
-        </div>
-        <div className="flex flex-row items-center justify-center p-4 space-x-3 ">
-          <SunriseIcon className="text-gray-500" />
-          <div>Fajr</div>
-        </div>
-
-        <div className="flex flex-row items-center justify-center">
-          <div>{convertTime(prayerTime.fajr)} AM</div>
-        </div>
-        <div className="flex flex-row items-center justify-center p-4 space-x-3 ">
-          <SunriseIcon className="text-gray-500" />
-          <div>Fajr</div>
-        </div>
-
-        <div className="flex flex-row items-center justify-center">
-          <div>{convertTime(prayerTime.fajr)} AM</div>
-        </div>
-      </div> */}
-
       <div className="grid grid-cols-5 gap-1 pt-3">
-        <div className="flex rounded-xl border bg-zinc-950 p-3 flex-col gap-2 items-center justify-center">
-          <SunriseIcon className="text-gray-500" />
+        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+          <Sunrise className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Fajr</div>
@@ -142,8 +49,8 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
             {convertTime(prayerTime.fajr)} AM
           </div>
         </div>
-        <div className="flex rounded-xl border bg-zinc-950 p-3 flex-col gap-2 items-center justify-center">
-          <SunriseIcon className="text-gray-500" />
+        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+          <Sunrise className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Dhuhr</div>
@@ -152,8 +59,8 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
             {convertTime(prayerTime.dhuhr)} PM
           </div>
         </div>
-        <div className="flex rounded-xl border bg-zinc-950 p-3 flex-col gap-2 items-center justify-center">
-          <SunriseIcon className="text-gray-500" />
+        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+          <Sun className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Asr</div>
@@ -162,8 +69,8 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
             {convertTime(prayerTime.asr)} PM
           </div>
         </div>
-        <div className="flex rounded-xl border bg-zinc-950 p-3 flex-col gap-2 items-center justify-center">
-          <SunsetIcon className="text-gray-500" />
+        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+          <Sunset className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Maghrib</div>
@@ -172,8 +79,8 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
             {convertTime(prayerTime.maghrib)} PM
           </div>
         </div>
-        <div className="flex rounded-xl border bg-zinc-950 p-3 flex-col gap-2 items-center justify-center">
-          <SunsetIcon className="text-gray-500" />
+        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+          <Moon className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Isha</div>
@@ -193,7 +100,8 @@ export default function TestPage() {
     dhuhr: 0,
     asr: 0,
     maghrib: 0,
-    isha: 0
+    isha: 0,
+    hijri: ''
   })
   const [tomorrowsPrayerTime, setTomorrowsPrayerTime] = useState({
     fajr: 0,
@@ -234,9 +142,7 @@ export default function TestPage() {
       setTime(new Date())
     }
 
-    return (
-      <p className="text-gray-500 text-xs">Now: {time.toLocaleTimeString()}</p>
-    )
+    return <div>{time.toLocaleTimeString()}</div>
   }
 
   async function getPrayerTimes() {
@@ -262,7 +168,8 @@ export default function TestPage() {
           isha: todaysData.isha,
           maghrib: todaysData.maghrib,
           asr: todaysData.asr,
-          dhuhr: todaysData.dhuhr
+          dhuhr: todaysData.dhuhr,
+          hijri: todaysData.hijri
         })
       }
 
@@ -371,6 +278,7 @@ export default function TestPage() {
       const hours = Math.floor(remaining / (1000 * 60 * 60))
       const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
       const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
+
       setRemainingTime(`${hours}:${minutes}:${seconds}`)
     }
 
@@ -385,12 +293,16 @@ export default function TestPage() {
         </div>
         <div className="rounded-xl border bg-zinc-950 p-4 space-y-2">
           {/* display upcoming prayer time and name */}
+          <div className="text-xs inline-flex items-center space-x-2">
+            <Calendar size={16} />
+            <div>{prayerTime.hijri}, </div>
+            <Clock />
+          </div>
           <div className="text-gray-500 text-xs">
             Upcoming: {nextPrayer.prayer} - {nextPrayer.time}
           </div>
-          <Countdown nextPrayerTime={nextPrayer.time} />
-          {/* <div className="text-5xl">timer here</div> */}
-          <Clock />
+          {/* <Countdown nextPrayerTime={nextPrayer.time}/> */}
+          <div className="text-5xl">countdown here</div>
         </div>
         <PrayerCard prayerTime={prayerTime} />
       </div>
