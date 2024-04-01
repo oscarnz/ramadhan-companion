@@ -32,6 +32,18 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
+async function callApi(content: string) {
+  const query = encodeURIComponent(content);
+  const res = await fetch(`https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`)
+  console.log(res)
+
+  const data = await res.json()
+
+  console.log(data);
+
+  return data
+}
+
 async function submitUserMessage(content: string) {
   'use server'
 
@@ -65,6 +77,7 @@ async function submitUserMessage(content: string) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 You are islamic teacher conversation bot and you can help users answering a general questions on Hadith, step by step.
 =======
 You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
@@ -88,12 +101,18 @@ Sometimes, the user will also ask about hadiths, ramadhan FAQs, or even doa (pra
 =======
 >>>>>>> e46df76 (feat: zakat calculator (#1))
 >>>>>>> 9b444b4 (feat: zakat calculator (#1))
+=======
+You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
+The user will usually ask about zakat fitrah rate in selangor, and you should guide them to pay zakat, step by step in the UI.
+Sometimes, the user will also ask about hadiths, ramadhan FAQs, or even doa (prayers).
+>>>>>>> main
 
 Make sure that your discussion or your focus is within ramadhan only. If the user ask about anything unrelated to ramadhan, respond that you
 are responsible as a companion to guide for ramadhan only.
 
 Also remember that all user live in Selangor, Malaysia. So for example, if the user ask about zakat fitrah rate this year, you should know
 that they are asking for the rate in Selangor. 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 <<<<<<< HEAD
@@ -125,6 +144,17 @@ If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\`
 >>>>>>> 39fc90e (feat: zakat calculator (#1))
 >>>>>>> e46df76 (feat: zakat calculator (#1))
 >>>>>>> 9b444b4 (feat: zakat calculator (#1))
+=======
+
+If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
+
+If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
+Hadith Context:
+"""
+${result}
+"""
+`
+>>>>>>> main
       },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
