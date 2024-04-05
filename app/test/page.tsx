@@ -1,8 +1,29 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Calendar, Moon, Sun, SunMoon, Sunrise, Sunset } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import {
+  Calendar,
+  MapPinned,
+  Moon,
+  Sun,
+  SunMoon,
+  Sunrise,
+  Sunset
+} from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card'
+import moment from 'moment'
+import Image from 'next/image'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface WaktuSolat {
   prayers: Array<{
@@ -94,6 +115,44 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
   )
 }
 
+const Location = () => {
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>Selangor</TooltipTrigger>
+          <TooltipContent className="flex gap-3 text-xs text-gray-500 z-50 w-64 rounded-md border bg-popover p-3 shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+            <MapPinned size={30} />
+            <span>
+              Gombak, Petaling, Sepang, Hulu Langat, Hulu Selangor, Shah Alam
+            </span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
+  )
+}
+
+function convertHijriDate(hijriDate: string) {
+  const [year, month, day] = hijriDate.split('-').map(Number)
+  const monthNames = [
+    'Muharram',
+    'Safar',
+    'Rabiulawal',
+    'Rabiulakhir',
+    'Jamadilawal',
+    'Jamadilakhir',
+    'Rejab',
+    'Syaaban',
+    'Ramadan',
+    'Syawal',
+    'Zulkaedah',
+    'Zulhijah'
+  ]
+
+  return `${day} ${monthNames[month - 1]} ${year}`
+}
+
 export default function TestPage() {
   const [prayerTime, setPrayerTime] = useState({
     fajr: 0,
@@ -115,6 +174,11 @@ export default function TestPage() {
     time: ''
   })
   const [currentTime, setCurrentTime] = useState<Date>()
+  const [timeLeft, setTimeLeft] = useState(null)
+  const [isHijriDateExpanded, setIsHijriDateExpanded] = useState(true)
+  const toggleHijriDateFormat = () => {
+    setIsHijriDateExpanded(!isHijriDateExpanded)
+  }
 
   function fetchNextPrayer() {
     setCurrentTime(new Date())
@@ -237,73 +301,71 @@ export default function TestPage() {
     }
   }
 
-  function Countdown({ nextPrayerTime }) {
-    const [remainingTime, setRemainingTime] = useState('')
+  function Countdown() {
+    if (currentTime != undefined) {
+      useEffect(() => {
+        const currentTime = moment()
+        const nextPrayerMoment = moment(nextPrayer.time, 'h:mm A')
 
-    useEffect(() => {
-      const targetTime = parseNextPrayerTime(nextPrayerTime)
-
-      // Calculate initial remaining time
-      const now = new Date()
-      let timeDifference = targetTime.getTime() - now.getTime()
-      if (timeDifference < 0) {
-        targetTime.setDate(targetTime.getDate() + 1)
-        timeDifference = targetTime.getTime() - now.getTime()
-      }
-      updateRemainingTime(timeDifference)
-
-      // Update remaining time every second
-      const timer = setInterval(() => {
-        const remaining = targetTime.getTime() - new Date().getTime()
-        updateRemainingTime(remaining)
-
-        if (remaining <= 0) {
-          clearInterval(timer)
+        if (nextPrayerMoment.isBefore(currentTime)) {
+          nextPrayerMoment.add(1, 'days')
         }
-      }, 1000)
 
-      return () => clearInterval(timer)
-    }, [nextPrayerTime])
+        const intervalId = setInterval(() => {
+          const currentTime = moment()
+          const duration = moment.duration(nextPrayerMoment.diff(currentTime))
 
-    const parseNextPrayerTime = timeString => {
-      const [time, ampm] = timeString.split(' ')[0].split(':')
-      const targetTime = new Date()
-      targetTime.setHours(parseInt(time, 10) + (ampm === 'PM' ? 12 : 0))
-      targetTime.setMinutes(0)
-      targetTime.setSeconds(0)
-      return targetTime
+          setTimeLeft({
+            hours: duration.hours(),
+            minutes: duration.minutes(),
+            seconds: duration.seconds()
+          })
+
+          // Stop the timer if the next prayer time has been reached
+          if (duration.asMilliseconds() <= 0) {
+            clearInterval(intervalId)
+          }
+        }, 1000)
+      }, [])
+
+      return (
+        <div className="text-5xl">
+          {timeLeft && (
+            <>
+              {timeLeft.hours.toString().padStart(2, '0')}:
+              {timeLeft.minutes.toString().padStart(2, '0')}:
+              {timeLeft.seconds.toString().padStart(2, '0')}
+            </>
+          )}
+        </div>
+      )
     }
-
-    const updateRemainingTime = remaining => {
-      const hours = Math.floor(remaining / (1000 * 60 * 60))
-      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
-
-      setRemainingTime(`${hours}:${minutes}:${seconds}`)
-    }
-
-    return <div className="text-5xl">{remainingTime}</div>
   }
 
   return (
     <div className="xl:p-64 p-1">
       <div className="rounded-xl border bg-zinc-950 p-4 text-green-400">
         <div className="float-right inline-block rounded-full bg-white/10 px-2 py-1 text-xs">
-          Selangor
+          <Location />
         </div>
         <div className="rounded-xl border bg-zinc-950 p-4 space-y-2">
           {/* display upcoming prayer time and name */}
           <div className="text-xs inline-flex items-center space-x-2">
-            <Calendar size={16} />
-            <div>{prayerTime.hijri}, </div>
+            <Calendar size={15} className="mr-1" />
+            <div onClick={toggleHijriDateFormat} className="cursor-pointer">
+              {isHijriDateExpanded
+                ? convertHijriDate(prayerTime.hijri)
+                : prayerTime.hijri}
+              ,
+            </div>
             <Clock />
           </div>
           <div className="text-gray-500 text-xs">
             Upcoming: {nextPrayer.prayer} - {nextPrayer.time}
           </div>
-          {/* <Countdown nextPrayerTime={nextPrayer.time}/> */}
-          <div className="text-5xl">countdown here</div>
+          <Countdown />
         </div>
+
         <PrayerCard prayerTime={prayerTime} />
       </div>
     </div>
