@@ -8,7 +8,6 @@ import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 import { Toaster } from '@/components/ui/sonner'
 
-
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
@@ -35,6 +34,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const route = metadata.metadataBase.pathname
+  console.log(route)
   return (
     <html lang="en" suppressHydrationWarning>
       <body
