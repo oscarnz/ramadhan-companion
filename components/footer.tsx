@@ -17,6 +17,10 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
       <ExternalLink href="https://github.com/vercel/ai">
         Vercel AI SDK
       </ExternalLink>
+      for {' '}
+      <ExternalLink href="https://sahur.dev/">
+        #GodamSahur2024
+      </ExternalLink>
       .
     </p>
   )
