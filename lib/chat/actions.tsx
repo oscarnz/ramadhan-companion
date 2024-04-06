@@ -23,7 +23,9 @@ import { SpinnerMessage, UserMessage } from '@/components/zakat/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
-import { setReminder } from '@/app/set-reminder/actions'
+import { setReminder, getReminder } from '@/app/set-reminder/actions'
+import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
@@ -52,6 +54,41 @@ const ReminderSuccessCard = () => {
             <CheckCircledIcon className="size-20 text-gray-500 group-hover:text-green-400 opacity-[30%] group-hover:opacity-[50%] transition-all group-hover:-rotate-[15deg] relative -bottom-6 -right-2 group-hover:scale-[120%]" />
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+const ReminderListCard = ({ reminders }) => {
+  return (
+    <div className="p-4 xl:p-32">
+      <div className="overflow-hidden rounded-lg shadow">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Reminder</TableHead>
+              <TableHead>Frequency</TableHead>
+              <TableHead>Time</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {reminders.length > 0 ? (
+              reminders.map((reminder) => (
+                <TableRow key={reminder.id}>
+                  <TableCell>{reminder.reminder}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{reminder.frequency}</Badge>
+                  </TableCell>
+                  <TableCell>{reminder.time}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3}>None</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   )
@@ -100,7 +137,8 @@ Also remember that all user live in Selangor, Malaysia. So for example, if the u
 that they are asking for the rate in Selangor. 
 
 If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
-If the user requests about reminder on tadarus or donation, call \`scheduleReminder\` to show the result
+If the user requests about creating reminder on tadarus or donation, call \`scheduleReminder\` to show the result.
+If the user requests about list of reminder on tadarus or donation, call \`listReminder\` to show the result
 
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
 Hadith Context:
@@ -183,9 +221,9 @@ ${result}
             .string()
             .describe('The type of the reminder. e.g. Donation/Tadarus'),
           time: z
-            .number()
+            .string()
             .describe(
-              'time in 24hr format with : . eg: 13:15/00:25/04:21/22:34'
+              'TIME MUST BE IN 24HR FORMAT, e.g: if user input 2pm, you should parsed 14:00, while 10.30pm should be 22:30.'
             )
         }),
         render: async function* ({ reminder, time }) {
@@ -195,7 +233,7 @@ ${result}
 
           const res = await setReminder({
             reminder: reminder,
-            time: time.toString(),
+            time: time,
             frequency: 'daily'
           })
 
@@ -211,8 +249,35 @@ ${result}
               }
             ]
           })
-
           return <ReminderSuccessCard />
+        }
+      },
+      listReminder: {
+        description: 'list all reminder that user have set',
+        parameters: z.object({
+        }),
+        render: async function* () {
+          yield <div>Fetching List..</div>
+
+          await sleep(3000)
+
+          const reminders = await getReminder()
+
+          console.log(reminders)
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'listReminder',
+                content: 'test'
+              }
+            ]
+          })
+          return <ReminderListCard reminders={reminders} /> 
         }
       }
     }
@@ -302,6 +367,9 @@ export const getUIStateFromAIState = (aiState: Chat) => {
         message.role === 'function' ? (
           message.name === 'scheduleReminder' ? (
             <ReminderSuccessCard />
+          ) : 
+          message.name === 'listReminder' ? (
+            <ReminderListCard />
           ) : message.name === 'showZakat' ? (
             <BotCard>
               <Zakat />
