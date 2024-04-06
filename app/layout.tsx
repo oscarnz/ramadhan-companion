@@ -11,10 +11,10 @@ import { Toaster } from '@/components/ui/sonner'
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
-    default: 'Next.js AI Chatbot',
-    template: `%s - Next.js AI Chatbot`
+    default: 'Ramadhan Companion',
+    template: `%s - Ramadhan Companion`
   },
-  description: 'An AI-powered chatbot template built with Next.js and Vercel.',
+  description: 'Your friendly Ramadhan Companion BOT',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
@@ -34,6 +34,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  const route = metadata.metadataBase.pathname
+  console.log(route)
   return (
     <html lang="en" suppressHydrationWarning>
       <body

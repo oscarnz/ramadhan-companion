@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { signOut } from '@/auth'
+import Link from 'next/link'
 
 export interface UserMenuProps {
   user: Session['user']
@@ -34,6 +35,13 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuContent sideOffset={8} align="start" className="w-fit">
           <DropdownMenuItem className="flex-col items-start">
             <div className="text-xs text-zinc-500">{user.email}</div>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex-col items-start">
+            <Link href="/set-reminder">
+              <button className="text-xs text-white">
+                Set Ramadhan Reminder
+              </button>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <form
