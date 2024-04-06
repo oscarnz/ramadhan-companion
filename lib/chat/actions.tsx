@@ -41,12 +41,19 @@ async function callApi(content: string) {
   return data
 }
 
-const ReminderSuccessCard = () => {
+const ReminderSuccessCard = ({
+  content
+}: {
+  content?: string
+}) => {
   return (
     <div className="p-4 xl:p-32">
       <div className="rounded-md border border-green-400 group relative">
         <div className="p-4">
           <div>Set Reminder Success!</div>
+          <div>
+            {content}
+          </div>
 
           <div className="absolute bottom-0 right-0 w-20 rounded overflow-hidden">
             <CheckCircledIcon className="size-20 text-gray-500 group-hover:text-green-400 opacity-[30%] group-hover:opacity-[50%] transition-all group-hover:-rotate-[15deg] relative -bottom-6 -right-2 group-hover:scale-[120%]" />
@@ -189,7 +196,7 @@ ${result}
             )
         }),
         render: async function* ({ reminder, time }) {
-          yield <ReminderSuccessCard />
+          yield <ReminderSuccessCard content={content} />
 
           await sleep(3000)
 
@@ -207,12 +214,12 @@ ${result}
                 id: nanoid(),
                 role: 'function',
                 name: 'scheduleReminder',
-                content: 'test'
+                content: `Reminder set for ${reminder} at ${time}`
               }
             ]
           })
 
-          return <ReminderSuccessCard />
+          return <ReminderSuccessCard content={content} />
         }
       }
     }
@@ -301,7 +308,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       display:
         message.role === 'function' ? (
           message.name === 'scheduleReminder' ? (
-            <ReminderSuccessCard />
+            <ReminderSuccessCard content={message.content} />
           ) : message.name === 'showZakat' ? (
             <BotCard>
               <Zakat />
