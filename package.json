@@ -47,7 +47,6 @@
     "next-themes": "^0.2.1",
     "openai": "^4.24.7",
     "react": "^18.2.0",
-    "react-clock": "^4.6.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.1",
     "react-intersection-observer": "^9.5.3",
