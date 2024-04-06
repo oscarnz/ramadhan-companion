@@ -24,6 +24,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import {
+  MasjidIcon,
+} from '@/components/icons'
 
 interface WaktuSolat {
   prayers: Array<{
@@ -60,13 +63,13 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
   return (
     <>
       <div className="grid grid-cols-5 gap-1 pt-3">
-        <div className="flex  p-3 flex-col gap-2 items-center justify-center">
+        <div className="flex p-3 flex-col gap-2 items-center justify-center">
           <Sunrise className="text-gray-500" />
 
           <div className="inline flex text-gray-500">
             <div>Fajr</div>
           </div>
-          <div className="text-[9px] inline flex text-center">
+          <div className="text-[9px] inline flex text-center text-green-400">
             {convertTime(prayerTime.fajr)} AM
           </div>
         </div>
@@ -76,7 +79,7 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
           <div className="inline flex text-gray-500">
             <div>Dhuhr</div>
           </div>
-          <div className="text-[9px] inline flex text-center">
+          <div className="text-[9px] inline flex text-center text-green-400">
             {convertTime(prayerTime.dhuhr)} PM
           </div>
         </div>
@@ -86,7 +89,7 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
           <div className="inline flex text-gray-500">
             <div>Asr</div>
           </div>
-          <div className="text-[9px] inline flex text-center">
+          <div className="text-[9px] inline flex text-center text-green-400">
             {convertTime(prayerTime.asr)} PM
           </div>
         </div>
@@ -96,7 +99,7 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
           <div className="inline flex text-gray-500">
             <div>Maghrib</div>
           </div>
-          <div className="text-[9px] inline flex text-center">
+          <div className="text-[9px] inline flex text-center text-green-400">
             {convertTime(prayerTime.maghrib)} PM
           </div>
         </div>
@@ -106,7 +109,7 @@ const PrayerCard = ({ prayerTime }: PrayerCardProps) => {
           <div className="inline flex text-gray-500">
             <div>Isha</div>
           </div>
-          <div className="text-[9px] inline flex text-center">
+          <div className="text-[9px] inline flex text-center text-green-400">
             {convertTime(prayerTime.isha)} PM
           </div>
         </div>
@@ -344,30 +347,39 @@ export default function TestPage() {
 
   return (
     <div className="xl:p-64 p-1">
-      <div className="rounded-xl border bg-zinc-950 p-4 text-green-400">
-        <div className="float-right inline-block rounded-full bg-white/10 px-2 py-1 text-xs">
-          <Location />
-        </div>
-        <div className="rounded-xl border bg-zinc-950 p-4 space-y-2">
+      <div className="flex flex-col rounded-xl border bg-zinc-950 p-4 space-y-2">
+        <div className="group relative rounded-xl border bg-zinc-950 p-4 text-green-400 flex flex-row items-center transition-color hover:border-green-400 overflow-hidden">
+          <div className="absolute top-0 right-0 inline-block rounded-full bg-white/10 px-2 py-1 text-xs">
+            <Location />
+          </div>
           {/* display upcoming prayer time and name */}
-          <div className="text-xs inline-flex items-center space-x-2">
-            <Calendar size={15} className="mr-1" />
-            <div onClick={toggleHijriDateFormat} className="cursor-pointer">
-              {isHijriDateExpanded
-                ? convertHijriDate(prayerTime.hijri)
-                : prayerTime.hijri}
-              ,
+          <div className="flex-1 relative z-[2] flex flex-col gap-2">
+            <div className="text-xs inline-flex items-center space-x-2">
+              <Calendar size={15} className="mr-1" />
+              <div onClick={toggleHijriDateFormat} className="cursor-pointer">
+                {isHijriDateExpanded
+                  ? convertHijriDate(prayerTime.hijri)
+                  : prayerTime.hijri}
+                ,
+              </div>
+              <Clock />
             </div>
-            <Clock />
+            <div className="text-gray-500 text-xs">
+              Upcoming: {nextPrayer.prayer} - {nextPrayer.time}
+            </div>
+            <div className='flex justify-between'>
+              <Countdown />
+            </div>
           </div>
-          <div className="text-gray-500 text-xs">
-            Upcoming: {nextPrayer.prayer} - {nextPrayer.time}
+            
+          <div className="absolute bottom-0 right-0 w-40 rounded overflow-hidden">
+            <MasjidIcon className="w-40 h-40 text-gray-500 group-hover:text-green-400 opacity-[30%] group-hover:opacity-[50%] transition-all group-hover:-rotate-[15deg] relative -bottom-6 -right-2 grou-hover:scale-[120%]" />
           </div>
-          <Countdown />
+                  
         </div>
-
         <PrayerCard prayerTime={prayerTime} />
       </div>
+
     </div>
   )
 }

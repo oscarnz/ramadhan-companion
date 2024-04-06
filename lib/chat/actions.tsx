@@ -27,7 +27,7 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/zakat/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
-import { PrayerTime } from '@/components/prayer/prayer-times'
+import { PrayerTime } from '@/components/prayer'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
@@ -176,7 +176,7 @@ If the user requests about the prayer time, call \`show_prayer_time_ui\` to show
 
           return (
             <BotCard>
-              <Zakat />
+              <PrayerTime />
             </BotCard>
           )
         }
