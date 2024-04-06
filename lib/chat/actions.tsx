@@ -18,7 +18,7 @@ import {
 
 import { Zakat } from '@/components/zakat'
 
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { ZakatSkeleton } from '@/components/zakat/zakat-skeleton'
 import {
   sleep,
@@ -29,17 +29,21 @@ import { SpinnerMessage, UserMessage } from '@/components/zakat/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
+import { setReminder } from '@/app/set-reminder/actions'
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || ''
+  apiKey: process.env.OPENAI_API_KEY || '',
+  // apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFyaWZmbnpobkBnbWFpbC5jb20iLCJ1dWlkIjoiNjY5ODQwY2UtYjFjOC00NDcwLTg1NDAtOGZiYWFkYjA1ZjUzIn0.qwiwAnX_QF0EeJBeGWZwsoefRlsRRPbzs2xZLmhqCtI",
+  // baseURL: "https://llm-router.nous.mesolitica.com",
 })
 
 async function callApi(content: string) {
   const query = encodeURIComponent(content);
   const res = await fetch(`https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`)
   console.log(res)
-
+  
   const data = await res.json()
-
+  
   console.log(data);
 
   return data
@@ -88,6 +92,7 @@ Also remember that all user live in Selangor, Malaysia. So for example, if the u
 that they are asking for the rate in Selangor. 
 
 If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
+If the user requests about reminder on tadarus or donation, call \`scheduleReminder\` to show the result
 
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
 Hadith Context:
@@ -162,6 +167,48 @@ ${result}
             <BotCard>
               <Zakat />
             </BotCard>
+          )
+        }
+      },
+      scheduleReminder: {
+        description:
+          'schedule a reminder for specific reason',
+        parameters: z.object({
+          reminder: z
+          .string()
+          .describe(
+            'The type of the reminder. e.g. Donation/Tadarus'
+          ),
+          time: z.number().describe('time in 24hr format with : . eg: 13:15/00:25/04:21/22:34'),
+        }),
+        render: async function* ({ reminder, time }) {
+          yield (
+            <div>wey sat kami tengah schedule</div>
+          )
+
+          await sleep(3000)
+
+          const res = await setReminder({
+            reminder: reminder,
+            time: time.toString(),
+            frequency: 'daily',
+          })
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'scheduleReminder',
+                content: 'test'
+              }
+            ]
+          })
+
+          return (
+            <div>dah schedule</div>
           )
         }
       },
@@ -250,7 +297,9 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === 'function' ? (
-          message.name === 'showZakat' ? (
+          message.name === 'scheduleReminder' ? (
+            <div>dah schedule</div>
+          ) : message.name === 'showZakat' ? (
             <BotCard>
               <Zakat />
             </BotCard>
