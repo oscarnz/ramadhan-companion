@@ -72,7 +72,7 @@ export function Zakat() {
       {/* <div className="text-3xl font-bold">${price}</div> */}
       <>
         <div className="relative mt-6 pb-6">
-          <p>Family Members</p>
+          <p>Dependents</p>
           <input
             id="labels-range-input"
             type="range"

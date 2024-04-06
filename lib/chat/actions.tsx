@@ -22,6 +22,7 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/zakat/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
+import { PrayerTime } from '@/components/prayer'
 
 import { setReminder, getReminder } from '@/app/set-reminder/actions'
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
@@ -43,12 +44,19 @@ async function callApi(content: string) {
   return data
 }
 
-const ReminderSuccessCard = () => {
+const ReminderSuccessCard = ({
+  content
+}: {
+  content?: string
+}) => {
   return (
     <div className="p-4 xl:p-32">
       <div className="rounded-md border border-green-400 group relative">
         <div className="p-4">
           <div>Set Reminder Success!</div>
+          <div>
+            {content}
+          </div>
 
           <div className="absolute bottom-0 right-0 w-20 rounded overflow-hidden">
             <CheckCircledIcon className="size-20 text-gray-500 group-hover:text-green-400 opacity-[30%] group-hover:opacity-[50%] transition-all group-hover:-rotate-[15deg] relative -bottom-6 -right-2 group-hover:scale-[120%]" />
@@ -128,6 +136,7 @@ You are islamic teacher conversation bot and you can help users answering a gene
 
 You are a ramadhan companion that guides a muslim throughout the holy month of ramadhan.
 The user will usually ask about zakat fitrah rate in selangor, and you should guide them to pay zakat, step by step in the UI.
+Other than that, the user will ask you about the prayer time in Selangor, and you should display the correct five prayer times in the UI.
 Sometimes, the user will also ask about hadiths, ramadhan FAQs, or even doa (prayers).
 
 Make sure that your discussion or your focus is within ramadhan only. If the user ask about anything unrelated to ramadhan, respond that you
@@ -139,6 +148,8 @@ that they are asking for the rate in Selangor.
 If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
 If the user requests about creating reminder on tadarus or donation, call \`scheduleReminder\` to show the result.
 If the user requests about list of reminder on tadarus or donation, call \`listReminder\` to show the result
+If the user requests about reminder on tadarus or donation, call \`scheduleReminder\` to show the result
+If the user requests about the prayer time, call \`show_prayer_time_ui\` to show the prayer time UI.
 
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
 Hadith Context:
@@ -214,6 +225,41 @@ ${result}
           )
         }
       },
+      showPrayerTime: {
+        description:
+          'Display the UI for prayer time in Selangor at the current moment. Use this if the user want to check prayer time.',
+        parameters: z.object({
+
+        }),
+        render: async function* () {
+          yield (
+            <BotCard>
+              <PrayerTime />
+            </BotCard>
+          )
+
+          await sleep(3000)
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'showPrayerTime',
+                content: 'test'
+              }
+            ]
+          })
+
+          return (
+            <BotCard>
+              <PrayerTime />
+            </BotCard>
+          )
+        }
+      },
       scheduleReminder: {
         description: 'schedule a reminder for specific reason',
         parameters: z.object({
@@ -227,7 +273,7 @@ ${result}
             )
         }),
         render: async function* ({ reminder, time }) {
-          yield <ReminderSuccessCard />
+          yield <ReminderSuccessCard content={content} />
 
           await sleep(3000)
 
@@ -245,11 +291,11 @@ ${result}
                 id: nanoid(),
                 role: 'function',
                 name: 'scheduleReminder',
-                content: 'test'
+                content: `Reminder set for ${reminder} at ${time}`
               }
             ]
           })
-          return <ReminderSuccessCard />
+          return <ReminderSuccessCard content={content} />
         }
       },
       listReminder: {
@@ -366,13 +412,17 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       display:
         message.role === 'function' ? (
           message.name === 'scheduleReminder' ? (
-            <ReminderSuccessCard />
+            <ReminderSuccessCard content={message.content} />
           ) : 
           message.name === 'listReminder' ? (
-            <ReminderListCard />
+            <ReminderListCard reminders={message.content} />
           ) : message.name === 'showZakat' ? (
             <BotCard>
               <Zakat />
+            </BotCard>
+          ) : message.name === 'showPrayerTime' ? (
+            <BotCard>
+              <PrayerTime />
             </BotCard>
           ) : null
         ) : message.role === 'user' ? (
