@@ -1,54 +1,66 @@
+/* eslint-disable tailwindcss/enforces-negative-arbitrary-values */
 import 'server-only'
 
 import {
   createAI,
-  createStreamableUI,
   getMutableAIState,
   getAIState,
   render,
   createStreamableValue
 } from 'ai/rsc'
 import OpenAI from 'openai'
+import { CheckCircledIcon } from '@radix-ui/react-icons'
 
-import {
-  BotCard,
-  BotMessage,
-  SystemMessage,
-} from '@/components/zakat'
+import { BotCard, BotMessage } from '@/components/zakat'
 
 import { Zakat } from '@/components/zakat'
 
 import { z } from 'zod'
 import { ZakatSkeleton } from '@/components/zakat/zakat-skeleton'
-import {
-  sleep,
-  nanoid
-} from '@/lib/utils'
+import { sleep, nanoid } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/zakat/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
+import { setReminder } from '@/app/set-reminder/actions'
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
+  // apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFyaWZmbnpobkBnbWFpbC5jb20iLCJ1dWlkIjoiNjY5ODQwY2UtYjFjOC00NDcwLTg1NDAtOGZiYWFkYjA1ZjUzIn0.qwiwAnX_QF0EeJBeGWZwsoefRlsRRPbzs2xZLmhqCtI",
+  // baseURL: "https://llm-router.nous.mesolitica.com",
 })
 
 async function callApi(content: string) {
-  const query = encodeURIComponent(content);
-  const res = await fetch(`https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`)
-  console.log(res)
-
+  const query = encodeURIComponent(content)
+  const res = await fetch(
+    `https://ramadhancompanion.sk8jxserver.com/test/vector?query=${query}`
+  )
   const data = await res.json()
 
-  console.log(data);
-
   return data
+}
+
+const ReminderSuccessCard = () => {
+  return (
+    <div className="p-4 xl:p-32">
+      <div className="rounded-md border border-green-400 group relative">
+        <div className="p-4">
+          <div>Set Reminder Success!</div>
+
+          <div className="absolute bottom-0 right-0 w-20 rounded overflow-hidden">
+            <CheckCircledIcon className="size-20 text-gray-500 group-hover:text-green-400 opacity-[30%] group-hover:opacity-[50%] transition-all group-hover:-rotate-[15deg] relative -bottom-6 -right-2 group-hover:scale-[120%]" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 async function submitUserMessage(content: string) {
   'use server'
 
-  const result = await callApi(content);
+  const result = await callApi(content)
 
   const aiState = getMutableAIState<typeof AI>()
 
@@ -88,6 +100,7 @@ Also remember that all user live in Selangor, Malaysia. So for example, if the u
 that they are asking for the rate in Selangor. 
 
 If the user requests about this year's zakat fitrah rate, call \`show_zakat_ui\` to show the zakat UI.
+If the user requests about reminder on tadarus or donation, call \`scheduleReminder\` to show the result
 
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
 Hadith Context:
@@ -131,9 +144,7 @@ ${result}
       showZakat: {
         description:
           'Display the UI for zakat fitrah rate for Selangor this year. Use this if the user want to check zakat fitrah rate.',
-        parameters: z.object({
-
-        }),
+        parameters: z.object({}),
         render: async function* () {
           yield (
             <BotCard>
@@ -143,7 +154,7 @@ ${result}
 
           await sleep(3000)
 
-          console.log(aiState);
+          console.log(aiState)
 
           aiState.done({
             ...aiState.get(),
@@ -165,6 +176,45 @@ ${result}
           )
         }
       },
+      scheduleReminder: {
+        description: 'schedule a reminder for specific reason',
+        parameters: z.object({
+          reminder: z
+            .string()
+            .describe('The type of the reminder. e.g. Donation/Tadarus'),
+          time: z
+            .number()
+            .describe(
+              'time in 24hr format with : . eg: 13:15/00:25/04:21/22:34'
+            )
+        }),
+        render: async function* ({ reminder, time }) {
+          yield <ReminderSuccessCard />
+
+          await sleep(3000)
+
+          const res = await setReminder({
+            reminder: reminder,
+            time: time.toString(),
+            frequency: 'daily'
+          })
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'scheduleReminder',
+                content: 'test'
+              }
+            ]
+          })
+
+          return <ReminderSuccessCard />
+        }
+      }
     }
   })
 
@@ -193,7 +243,7 @@ export type UIState = {
 
 export const AI = createAI<AIState, UIState>({
   actions: {
-    submitUserMessage,
+    submitUserMessage
   },
   initialUIState: [],
   initialAIState: { chatId: nanoid(), messages: [] },
@@ -250,7 +300,9 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === 'function' ? (
-          message.name === 'showZakat' ? (
+          message.name === 'scheduleReminder' ? (
+            <ReminderSuccessCard />
+          ) : message.name === 'showZakat' ? (
             <BotCard>
               <Zakat />
             </BotCard>
