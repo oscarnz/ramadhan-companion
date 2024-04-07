@@ -37,6 +37,13 @@ export function UserMenu({ user }: UserMenuProps) {
             <div className="text-xs text-zinc-500">{user.email}</div>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex-col items-start">
+            <Link href="/">
+              <button className="text-xs text-white">
+                Home
+              </button>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="flex-col items-start">
             <Link href="/set-reminder">
               <button className="text-xs text-white">
                 Set Ramadhan Reminder

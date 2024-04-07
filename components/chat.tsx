@@ -13,6 +13,10 @@ import { Message } from '@/lib/chat/actions'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { toast } from 'sonner'
 
+import { buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
+import { IconPlus } from '@/components/ui/icons'
+
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -31,7 +35,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
 
   useEffect(() => {
     if (session?.user) {
-      if (!path.includes('chat') && messages.length === 1) {
+      if (path.includes('chat') && messages.length === 1) {
         window.history.replaceState({}, '', `/chat/${id}`)
       }
     }
@@ -62,6 +66,18 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
       className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
       ref={scrollRef}
     >
+      <div className="flex justify-center pt-4 md:pt-10">
+        <Link
+          href="/chat"
+          className={cn(
+            buttonVariants({ variant: 'outline' }),
+            'h-8 w-auto px-3 py-1 text-sm justify-center bg-zinc-50 shadow-none transition-colors hover:bg-zinc-200/40 dark:bg-zinc-900 dark:hover:bg-zinc-300/10 flex items-center'
+          )}
+        >
+          <IconPlus className="mr-2 stroke-2" />
+          New Chat
+        </Link>
+      </div>
       <div
         className={cn('pb-[200px] pt-4 md:pt-10', className)}
         ref={messagesRef}

@@ -81,7 +81,7 @@ const ReminderListCard = ({ reminders }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reminders.length > 0 ? (
+            {Array.isArray(reminders) ? ( 
               reminders.map((reminder) => (
                 <TableRow key={reminder.id}>
                   <TableCell>{reminder.reminder}</TableCell>
