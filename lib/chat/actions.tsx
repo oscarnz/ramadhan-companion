@@ -27,6 +27,7 @@ import { PrayerTime } from '@/components/prayer'
 import { setReminder, getReminder } from '@/app/set-reminder/actions'
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { IftarTime } from '@/components/prayer/iftar-time'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
@@ -150,6 +151,7 @@ If the user requests about creating reminder on tadarus or donation, call \`sche
 If the user requests about list of reminder on tadarus or donation, call \`listReminder\` to show the result
 If the user requests about reminder on tadarus or donation, call \`scheduleReminder\` to show the result
 If the user requests about the prayer time, call \`show_prayer_time_ui\` to show the prayer time UI.
+If the user requests about the iftar time or waktu berbuka, call \`show_iftar_time_ui\` to show the iftar time UI.
 
 If the user wants to ask anything regarding to islamic hadith, answer according to the context given below, please extract the exact arabic hadith and its meaning with more elaborations.
 Hadith Context:
@@ -234,7 +236,7 @@ ${result}
         render: async function* () {
           yield (
             <BotCard>
-              <PrayerTime />
+              <ZakatSkeleton />
             </BotCard>
           )
 
@@ -256,6 +258,41 @@ ${result}
           return (
             <BotCard>
               <PrayerTime />
+            </BotCard>
+          )
+        }
+      },
+      showWaktuBerbuka: {
+        description:
+          'Display the UI for maghrib/ iftar time in Selangor today. Use this if the user want to check iftar time or waktu berbuka.',
+        parameters: z.object({
+
+        }),
+        render: async function* () {
+          yield (
+            <BotCard>
+              <ZakatSkeleton />
+            </BotCard>
+          )
+
+          await sleep(3000)
+
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'showWaktuBerbuka',
+                content: 'test'
+              }
+            ]
+          })
+
+          return (
+            <BotCard>
+              <IftarTime />
             </BotCard>
           )
         }
@@ -303,7 +340,7 @@ ${result}
         parameters: z.object({
         }),
         render: async function* () {
-          yield <div>Fetching List..</div>
+          yield <div>Fetching list...</div>
 
           await sleep(3000)
 
@@ -323,7 +360,7 @@ ${result}
               }
             ]
           })
-          return <ReminderListCard reminders={reminders} /> 
+          return <ReminderListCard reminders={reminders} />
         }
       }
     }
@@ -413,18 +450,22 @@ export const getUIStateFromAIState = (aiState: Chat) => {
         message.role === 'function' ? (
           message.name === 'scheduleReminder' ? (
             <ReminderSuccessCard content={message.content} />
-          ) : 
-          message.name === 'listReminder' ? (
-            <ReminderListCard reminders={message.content} />
-          ) : message.name === 'showZakat' ? (
-            <BotCard>
-              <Zakat />
-            </BotCard>
-          ) : message.name === 'showPrayerTime' ? (
-            <BotCard>
-              <PrayerTime />
-            </BotCard>
-          ) : null
+          ) :
+            message.name === 'listReminder' ? (
+              <ReminderListCard reminders={message.content} />
+            ) : message.name === 'showZakat' ? (
+              <BotCard>
+                <Zakat />
+              </BotCard>
+            ) : message.name === 'showPrayerTime' ? (
+              <BotCard>
+                <PrayerTime />
+              </BotCard>
+            ) : message.name === 'showWaktuBerbuka' ? (
+              <BotCard>
+                <IftarTime />
+              </BotCard>
+            ) : null
         ) : message.role === 'user' ? (
           <UserMessage>{message.content}</UserMessage>
         ) : (

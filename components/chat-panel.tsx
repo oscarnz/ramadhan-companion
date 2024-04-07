@@ -45,16 +45,16 @@ export function ChatPanel({
       subheading: 'in Selangor right now?',
       message: 'What is the rate of zakat fitrah in Selangor this year?'
     },
-    // {
-    //   heading: 'I would like to buy',
-    //   subheading: '42 $DOGE',
-    //   message: `I would like to buy 42 $DOGE`
-    // },
-    // {
-    //   heading: 'What are some',
-    //   subheading: `recent events about $DOGE?`,
-    //   message: `What are some recent events about $DOGE?`
-    // }
+    {
+      heading: 'Please list out all my reminders',
+      subheading: 'for donation/ tadarus',
+      message: `Please list out all my reminders for donation/ tadarus`
+    },
+    {
+      heading: 'What is the iftar time',
+      subheading: `in Selangor today?`,
+      message: `What is the iftar time in Selangor today?`
+    }
   ]
 
   return (
