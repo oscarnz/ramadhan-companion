@@ -118,7 +118,7 @@ export function IftarTime() {
             </CardHeader>
             <CardContent className="flex items-center justify-center">
                 <div className="grid gap-2 text-center">
-                    <div className="text-7xl font-bold">{convertTime(iftarTime.maghrib)} pm</div>
+                    <div className="text-5xl font-bold md:text-7xl">{convertTime(iftarTime.maghrib)} pm</div>
                     <div className="text-sm text-muted-foreground tracking-wide">{remainingTime}</div>
                 </div>
             </CardContent>
